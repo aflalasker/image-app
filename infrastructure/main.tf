@@ -14,17 +14,17 @@ resource "azurerm_container_registry" "main" {
   tags                = local.default_tags
 
   provisioner "local-exec" {
-    command = "az acr import --name ${self.name} --source assessmentacr.azurecr.io/otel-col:latest --image otel-col:latest"
+    command = "az acr import --name ${self.name} --source ${var.source_acr_server_name}/otel-col:latest --image otel-col:latest"
     when    = create
   }
 
   provisioner "local-exec" {
-    command = "az acr import --name ${self.name} --source assessmentacr.azurecr.io/image-api-app:latest --image image-api-app:latest"
+    command = "az acr import --name ${self.name} --source ${var.source_acr_server_name}/image-api-app:latest --image image-api-app:latest"
     when    = create
   }
 
   provisioner "local-exec" {
-    command = "az acr import --name ${self.name} --source assessmentacr.azurecr.io/frontend:latest --image frontend:latest"
+    command = "az acr import --name ${self.name} --source ${var.source_acr_server_name}/frontend:latest --image frontend:latest"
     when    = create
   }
 }
