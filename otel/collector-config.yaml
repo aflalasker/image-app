@@ -1,0 +1,26 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+
+exporters:
+  azuremonitor:
+  debug:
+    verbosity: detailed
+
+service:
+  extensions: []
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: []
+      exporters: [debug, azuremonitor]
+    metrics:
+      receivers: [otlp]
+      processors: []
+      exporters: [debug, azuremonitor]
+    logs:
+      receivers: [otlp]
+      processors: []
+      exporters: [debug, azuremonitor]
