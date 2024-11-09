@@ -1,0 +1,79 @@
+version: "3.8"
+
+services:
+  frontend:
+    image: <SOURCE_ACR_SERVER_NAME>/frontend:latest
+    container_name: frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    develop:
+      watch:
+        - path: .
+          action: rebuild
+    environment:
+      - BACKEND_API_URL=http://api:8000
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+      - otel-collector
+    networks:
+      - app-network
+
+  api:
+    image: <SOURCE_ACR_SERVER_NAME>/image-api-app:latest
+    container_name: api
+    build:
+      context: ./apis
+      dockerfile: Dockerfile
+    develop:
+      watch:
+        - path: .
+          action: rebuild
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
+      - AZURE_TABLE_STORAGE_ACCOUNT_NAME=${AZURE_TABLE_STORAGE_ACCOUNT_NAME}
+      - AZURE_STORAGE_ACCOUNT_TABLE_NAME=${AZURE_STORAGE_ACCOUNT_TABLE_NAME}
+      - AZURE_STORAGE_ACCOUNT_TABLE_KEY=${AZURE_STORAGE_ACCOUNT_TABLE_KEY}
+      - AZURE_GUEST_STORAGE_ACCOUNT_NAME=${AZURE_GUEST_STORAGE_ACCOUNT_NAME}
+      - AZURE_GUEST_STORAGE_ACCOUNT_KEY=${AZURE_GUEST_STORAGE_ACCOUNT_KEY}
+      - AZURE_REGISTERED_STORAGE_ACCOUNT_NAME=${AZURE_REGISTERED_STORAGE_ACCOUNT_NAME}
+      - AZURE_REGISTERED_STORAGE_ACCOUNT_KEY=${AZURE_REGISTERED_STORAGE_ACCOUNT_KEY}
+      - APP_CLIENT_ID=${APP_CLIENT_ID}
+      - OPEN_API_CLIENT_ID=${OPEN_API_CLIENT_ID}
+      - TENANT_ID=${TENANT_ID}
+      - REDIRECT_URIS=${REDIRECT_URIS}
+      - SCOPE=${SCOPE}
+      - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING}
+      - CONTAINER_APP_HOSTNAME=${CONTAINER_APP_HOSTNAME}
+      - ALLOWED_HOST=${ALLOWED_HOST}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - otel-collector
+    networks:
+      - app-network
+
+  otel-collector:
+    image: <SOURCE_ACR_SERVER_NAME>/otel-col:latest
+    container_name: otel-collector
+    build:
+      context: ./otel
+      dockerfile: Dockerfile
+    develop:
+      watch:
+        - path: .
+          action: rebuild
+
+    environment:
+      - APPLICATIONINSIGHTS_CONNECTION_STRING=${APPLICATIONINSIGHTS_CONNECTION_STRING}
+    ports:
+      - "4317:4317"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
