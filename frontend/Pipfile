@@ -1,0 +1,25 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[packages]
+httpx = "*"
+pydantic = "*"
+pydantic-settings = "*"
+opentelemetry-api = "*"
+streamlit = "*"
+watchdog = "*"
+
+
+[pipenv]
+allow_prereleases = true
+
+[dev-packages]
+pytest = "*"
+
+[requires]
+python_version = "3.11"
+
+[scripts]
+app = "streamlit run main.py"
