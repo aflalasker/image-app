@@ -1,0 +1,13 @@
+customMetrics
+| where cloud_RoleName == "apis.image-api" and name == "image_type_counter"
+| project ImageType = tostring(customDimensions["image_type"]), valueCount
+| summarize ImageTypeCount = sum(valueCount) by ImageType
+| extend ColorHint = case(
+                         ImageType == "jpeg",
+                         "jpeg",
+                         ImageType == "png",
+                         "png",
+                         "Unknown Image Type"
+                     )
+| render barchart with (title="Image type count by image type", xtitle="Total", ytitle="Image Type")
+

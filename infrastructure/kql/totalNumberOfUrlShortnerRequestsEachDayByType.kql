@@ -1,0 +1,11 @@
+customMetrics
+| where cloud_RoleName == "apis.image-api" and name == "url_shortener_request_counter"
+| project valueCount, customDimensions["request_type"], timestamp
+| summarize TotalByRequestType = sum(valueCount) by toupper(tostring(customDimensions_request_type)), bin(timestamp, 1d)
+| render columnchart
+    with (
+    kind=stacked,
+    title="Total number of URL Shortner requests each day by type",
+    xtitle="Day",
+    ytitle="Number of requests")
+

@@ -1,0 +1,9 @@
+customMetrics
+| where cloud_RoleName == "apis.image-api" and name == "image_upload_request_counter"
+| project format_datetime(timestamp, "d/M"), value
+| render timechart
+    with (
+    title="Image Upload Requests by Date",
+    xtitle="Day of the month",
+    ytitle="Total Upload Requests")
+

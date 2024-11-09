@@ -1,0 +1,15 @@
+customMetrics
+| where cloud_RoleName == "apis.image-api"
+    and name == "user_type_counter"
+    and (tostring(customDimensions["user_type"]) == "Guest" or tostring(customDimensions["user_type"]) == "Registered")
+| project name, tostring(customDimensions["user_type"]), valueCount
+| summarize TotalByUserType = sum(valueCount) by customDimensions_user_type
+| extend ColorHint = case(
+                         customDimensions_user_type == "Guest",
+                         "Guest",
+                         customDimensions_user_type == "Registered",
+                         "Registered",
+                         "Unknown User Type"
+                     )
+| render columnchart with (title="Total use by user type", xtitle="User Type", ytitle="Total Use")
+

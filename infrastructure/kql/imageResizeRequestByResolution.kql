@@ -1,0 +1,18 @@
+customMetrics
+| where cloud_RoleName == "apis.image-api" and name == "image_resolution_request_counter"
+| project valueCount, tostring(customDimensions["resolution"])
+| extend ColorHint = case(
+                         customDimensions_resolution == "720p",
+                         "720p",
+                         customDimensions_resolution == "1080p",
+                         "1080p",
+                         customDimensions_resolution == "4k",
+                         "4k",
+                         "Unknown Resolution"
+                     )
+| render piechart
+    with (
+    title="Image Resize Requests by Resolution",
+    xtitle="Resolution",
+    ytitle="Total Number of Requests")
+

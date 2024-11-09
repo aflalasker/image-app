@@ -1,0 +1,6 @@
+customMetrics
+| where cloud_RoleName == "apis.image-api" and name == "most_common_short_urls"
+| project ShortID = tostring(customDimensions["short_id"]), valueCount
+| summarize Total = sum(valueCount) by ShortID
+| render table with (title="Most populer short ids")
+

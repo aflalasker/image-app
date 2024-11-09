@@ -1,0 +1,6 @@
+customMetrics
+| where cloud_RoleName == "apis.image-api"
+| summarize MetricCount = count() by name
+| project Name = name, Total = MetricCount
+| render table with (title="Metric counts by metric type")
+
