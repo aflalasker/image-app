@@ -3,7 +3,7 @@ formatter: "md table"
 version: "v0.19.0"
 
 recursive:
-  enabled: false
+  enabled: true
   path: modules
   include-main: true
 
