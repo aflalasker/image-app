@@ -55,9 +55,11 @@ app = FastAPI(
     ],
 )
 
+_ALLOWED_ORIGINS = settings.ALLOWED_HOSTS.split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[f"{settings.HTTP_PROTOCOL}{settings.ALLOWED_HOST}"],
+    allow_origins=_ALLOWED_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -206,9 +208,7 @@ async def orchestrate(
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-        short_url = (
-            f"{settings.HTTP_PROTOCOL}{settings.CONTAINER_APP_HOSTNAME}/s/{short_id}"
-        )
+        short_url = f"{settings.HTTP_PROTOCOL}{settings.DNS_TO_USE}/s/{short_id}"
         response = ShortUrlCommonResponse(
             short_id=short_id,
             short_url=short_url,

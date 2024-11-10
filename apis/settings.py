@@ -56,15 +56,23 @@ class Settings(BaseSettings):
 
     OTEL_EXPORTER_OTLP_ENDPOINT: str
 
+    CUSTOM_DNS: str
     CONTAINER_APP_HOSTNAME: str
     ALLOWED_HOST: str
+
+    @computed_field
+    @property
+    def DNS_TO_USE(self) -> str:
+        if self.CUSTOM_DNS:
+            return self.CUSTOM_DNS
+        return self.CONTAINER_APP_HOSTNAME
 
     @computed_field
     @property
     def HTTP_PROTOCOL(self) -> str:
         if self.CONTAINER_APP_HOSTNAME.startswith(
             "localhost"
-        ) and self.ALLOWED_HOST.startswith("localhost"):
+        ) and self.CUSTOM_DNS.startswith("localhost"):
             return "http://"
         return "https://"
 

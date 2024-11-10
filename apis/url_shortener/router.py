@@ -63,7 +63,7 @@ async def create_url(url: str, request: Request) -> ShortUrlCommonResponse:
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    short_url = f"{settings.HTTP_PROTOCOL}{settings.CONTAINER_APP_HOSTNAME}/{_PREFIX}/{short_id}"
+    short_url = f"{settings.HTTP_PROTOCOL}{settings.DNS_TO_USE}/{_PREFIX}/{short_id}"
     response = ShortUrlCommonResponse(
         short_id=short_id, short_url=short_url, original_url=url, should_redirect=False
     )
@@ -100,7 +100,7 @@ async def get_url(short_id: str, request: Request) -> RedirectResponse:
     if not short_url_table_entity:
         raise HTTPException(status_code=404, detail="URL not found.")
 
-    short_url = f"{settings.HTTP_PROTOCOL}{settings.CONTAINER_APP_HOSTNAME}/{_PREFIX}/{short_id}"
+    short_url = f"{settings.HTTP_PROTOCOL}{settings.DNS_TO_USE}/{_PREFIX}/{short_id}"
 
     response = ShortUrlCommonResponse(
         short_id=short_id,

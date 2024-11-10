@@ -1,10 +1,10 @@
 output "swagger_url" {
-  value       = "https://${azurerm_container_app.api.ingress[0].fqdn}/docs"
+  value       = { "container_app_fqdn" : "https://${azurerm_container_app.api.ingress[0].fqdn}/docs", "dns" : module.api.fqdn }
   description = "The URL for the Swagger documentation"
 }
 
 output "frontend_url" {
-  value       = "https://${azurerm_container_app.frontend.ingress[0].fqdn}"
+  value       = { "container_app_fqdn" : "https://${azurerm_container_app.frontend.ingress[0].fqdn}", "dns" : module.frontend.fqdn }
   description = "The URL for the frontend"
 }
 

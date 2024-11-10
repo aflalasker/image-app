@@ -10,7 +10,7 @@ locals {
     Repository = "https://github.com/aflalasker/image-app"
   }
 
-  oauth2_redirect_uris = "http://localhost:8000/oauth2-redirect,https://${azurerm_container_app.api.ingress[0].fqdn}/oauth2-redirect"
+  oauth2_redirect_uris = "http://localhost:8000/oauth2-redirect,https://${azurerm_container_app.api.ingress[0].fqdn}/oauth2-redirect,https://${module.api.fqdn}/oauth2-redirect"
 
   otel_exporter_otlp_endpoint = "http://${azurerm_container_app.otel.name}:${azurerm_container_app.otel.ingress[0].exposed_port}"
 
@@ -31,7 +31,9 @@ locals {
     "SCOPE"              = "api://${azuread_application_registration.image_api_app.client_id}/${azuread_application_permission_scope.user_impersonation.value}"
 
     "OTEL_EXPORTER_OTLP_ENDPOINT" = local.otel_exporter_otlp_endpoint
-    "ALLOWED_HOST"                = "*"
+    "ALLOWED_HOSTS"               = "https://fe.${azurerm_dns_zone.env_dns.name},https://${azurerm_container_app.frontend.ingress[0].fqdn}"
+
+    "CUSTOM_DNS" = "api.${var.env}.${var.dns_zone_name}"
   }
 
   kql_queries = { for file in fileset(path.module, "kql/*.kql") : file => file("${path.module}/${file}") }

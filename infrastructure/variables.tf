@@ -17,3 +17,8 @@ variable "source_acr_server_name" {
   description = "The Azure Container Registry to use as the source to copy the images from to the ACR in the target environment"
   type        = string
 }
+
+variable "dns_zone_name" {
+  description = "The DNS zone name to use for the custom DNS configuration"
+  type        = string
+}
