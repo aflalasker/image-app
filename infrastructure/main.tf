@@ -63,3 +63,9 @@ resource "azurerm_user_assigned_identity" "app_identity" {
   resource_group_name = azurerm_resource_group.main.name
   tags                = local.default_tags
 }
+
+resource "azurerm_dns_zone" "env_dns" {
+  name                = "${var.env}.${var.dns_zone_name}"
+  resource_group_name = azurerm_resource_group.main.name
+  tags                = local.default_tags
+}

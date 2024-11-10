@@ -20,7 +20,7 @@ resource "azurerm_container_app" "frontend" {
 
       env {
         name  = "BACKEND_API_URL"
-        value = "https://${azurerm_container_app.api.ingress[0].fqdn}"
+        value = "https://api.${var.env}.${var.dns_zone_name}"
       }
 
       env {
@@ -165,4 +165,35 @@ resource "azurerm_container_app" "otel" {
     server   = azurerm_container_registry.main.login_server
     identity = azurerm_user_assigned_identity.app_identity.id
   }
+}
+
+####################### Container App Custom DNS #######################
+module "api" {
+  source              = "./modules/container_apps_custom_dns"
+  dns_zone_name       = azurerm_dns_zone.env_dns.name
+  resource_group_name = azurerm_resource_group.main.name
+  container_app_dns_config = {
+    container_app_id              = azurerm_container_app.api.id
+    container_app_name            = azurerm_container_app.api.name
+    container_environment_name    = azurerm_container_app_environment.image_app_environment.name
+    service_name                  = "api"
+    custom_domain_verification_id = azurerm_container_app.api.custom_domain_verification_id
+    fqdn                          = azurerm_container_app.api.ingress[0].fqdn
+  }
+  tags = local.default_tags
+}
+
+module "frontend" {
+  source              = "./modules/container_apps_custom_dns"
+  dns_zone_name       = azurerm_dns_zone.env_dns.name
+  resource_group_name = azurerm_resource_group.main.name
+  container_app_dns_config = {
+    container_app_id              = azurerm_container_app.frontend.id
+    container_app_name            = azurerm_container_app.frontend.name
+    container_environment_name    = azurerm_container_app_environment.image_app_environment.name
+    service_name                  = "fe"
+    custom_domain_verification_id = azurerm_container_app.frontend.custom_domain_verification_id
+    fqdn                          = azurerm_container_app.frontend.ingress[0].fqdn
+  }
+  tags = local.default_tags
 }
