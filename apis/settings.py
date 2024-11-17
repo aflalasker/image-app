@@ -58,7 +58,7 @@ class Settings(BaseSettings):
 
     CUSTOM_DNS: str
     CONTAINER_APP_HOSTNAME: str
-    ALLOWED_HOST: str
+    ALLOWED_HOSTS: str
 
     @computed_field
     @property

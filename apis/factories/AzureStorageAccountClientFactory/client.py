@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from io import BytesIO
 from uuid import uuid4
 
-from azure.core.credentials import AzureNamedKeyCredential
+from azure.identity import DefaultAzureCredential
 from azure.storage.blob import (
     BlobClient,
     BlobSasPermissions,
@@ -33,7 +33,7 @@ class AzureStorageAccountClientFactory:
     def __init__(self, account_name: str, account_key: str) -> None:
         self.account_name: str = account_name
         self.account_key: str = account_key
-        self.credential = AzureNamedKeyCredential(name=account_name, key=account_key)
+        self.credential = DefaultAzureCredential()
         self.blob_service_client = BlobServiceClient(
             account_url=f"https://{account_name}.blob.core.windows.net",
             credential=self.credential,
