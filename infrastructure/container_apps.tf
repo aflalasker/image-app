@@ -3,7 +3,17 @@ resource "azurerm_container_app_environment" "image_app_environment" {
   location                   = azurerm_resource_group.main.location
   resource_group_name        = azurerm_resource_group.main.name
   log_analytics_workspace_id = azurerm_log_analytics_workspace.main.id
-  tags                       = local.default_tags
+  tags                       = merge(local.default_tags, { "domain_name" = "${var.env}.${var.dns_zone_name}" })
+
+  provisioner "local-exec" {
+    command = "az containerapp env certificate delete -g ${self.resource_group_name} --name ${self.name} --certificate api.${self.tags["domain_name"]} --yes"
+    when    = destroy
+  }
+
+  provisioner "local-exec" {
+    command = "az containerapp env certificate delete -g ${self.resource_group_name} --name ${self.name} --certificate fe.${self.tags["domain_name"]} --yes"
+    when    = destroy
+  }
 }
 
 resource "azurerm_container_app" "frontend" {
@@ -60,7 +70,7 @@ resource "azurerm_container_app" "api" {
   container_app_environment_id = azurerm_container_app_environment.image_app_environment.id
   resource_group_name          = azurerm_resource_group.main.name
   revision_mode                = "Single"
-  tags                         = local.default_tags
+  tags                         = merge(local.default_tags, { "domain_name" = var.dns_zone_name })
 
   template {
     container {
