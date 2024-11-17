@@ -26,7 +26,17 @@ resource "azurerm_dns_cname_record" "cert_verification" {
 resource "azurerm_container_app_custom_domain" "custom_domain" {
   name             = "${var.container_app_dns_config.service_name}.${var.dns_zone_name}"
   container_app_id = var.container_app_dns_config.container_app_id
-  depends_on       = [azurerm_dns_txt_record.asuid]
+
+  provisioner "local-exec" {
+    command = "./${path.module}/certificate_provisioner.sh ${var.resource_group_name} ${var.container_app_dns_config.container_environment_name} ${var.container_app_dns_config.service_name}.${var.dns_zone_name} --hostname ${var.container_app_dns_config.service_name}.${var.dns_zone_name} --validation-method CNAME"
+    when    = create
+  }
+  provisioner "local-exec" {
+    command = "az containerapp hostname bind -n ${var.container_app_dns_config.container_app_name} -g ${var.resource_group_name} --hostname ${var.container_app_dns_config.service_name}.${var.dns_zone_name} --certificate ${var.container_app_dns_config.service_name}.${var.dns_zone_name} --environment ${var.container_app_dns_config.container_environment_name}"
+    when    = create
+  }
+
+  depends_on = [azurerm_dns_txt_record.asuid]
 
   lifecycle {
     ignore_changes = [certificate_binding_type, container_app_environment_certificate_id]
